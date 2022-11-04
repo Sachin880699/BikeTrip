@@ -1,7 +1,6 @@
-from django.shortcuts import render
 from rest_framework.response import Response
 from trip.models import Trip
-from rest_framework import viewsets, status, permissions
+from rest_framework import viewsets
 from api.serializers import TripListSerializer
 from rest_framework.pagination import PageNumberPagination
 import requests
