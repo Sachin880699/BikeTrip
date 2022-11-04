@@ -4,6 +4,8 @@ from trip.models import Trip
 from rest_framework import viewsets, status, permissions
 from api.serializers import TripListSerializer
 from rest_framework.pagination import PageNumberPagination
+import requests
+import geopy.distance
 
 
 
@@ -21,25 +23,19 @@ class TripList(viewsets.ViewSet):
         return Response(context)
 
 
-import requests
-import geopy.distance
+
 class GetTripDetails(viewsets.ViewSet):
     def create(self, request):
         data = request.data
         trip_id = data['trip_id']
         trip_obj = Trip.objects.get(id=trip_id)
-        response = requests.get("https://api.weather.gov/points/40.7424,-73.9892").json()
+        response = requests.get(f"https://api.weather.gov/points/{trip_obj.start_station_latitude},{trip_obj.start_station_longitude}").json()
         forecast = response['properties']['forecast']
         observation_stations_data = response['properties']['observationStations']
         weather_data_response = requests.get(forecast).json()
-        # print(weather_data_response['properties']['periods'][0],'++++++++++++++++++++++')
-
         observation_stations = requests.get(observation_stations_data).json()
-
-
         output = []
         for res in observation_stations['features']:
-
             output.append(res)
             for res in output:
                 coordinates = res.get("geometry")
@@ -48,22 +44,14 @@ class GetTripDetails(viewsets.ViewSet):
                 latitude = coordinates[0]
                 properties = res.get("properties")
                 city_name = properties['name']
-
-
                 coords_1 = (trip_obj.start_station_latitude , trip_obj.start_station_longitude)
                 coords_2 = (longitude,latitude)
-                print(coords_2)
                 nearest_city_distance = str(geopy.distance.geodesic(coords_1, coords_2).km).split(".")[0]
-                # print(city_name)
-                # print(nearest_city_distance)
                 nearest_location = {}
                 nearest_location["City"] = city_name
                 nearest_location["Distance"] = nearest_city_distance +" KM"
-
-
                 break
             break
-
         context = {
             "Message": "success",
             "Trip_Obj": TripListSerializer(trip_obj, many=False, context={'request': request}).data,
