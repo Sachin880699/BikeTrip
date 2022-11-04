@@ -1,0 +1,9 @@
+
+
+1 ) adhi forecast madhun sagla periods cha data kadhaycha 
+
+
+2 ) observationStations madhun properties madhun coordinates kadun start point chya near che cordinate ani to json format pass karaycha response madhe
+
+
+3 ) 
