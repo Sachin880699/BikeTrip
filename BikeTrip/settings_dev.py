@@ -1,7 +1,6 @@
 from .base_settings import *
 import os
 
-
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
