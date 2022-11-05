@@ -5,8 +5,12 @@ from api.serializers import TripListSerializer
 from rest_framework.pagination import PageNumberPagination
 import requests
 import geopy.distance
+from rest_framework import status
 
 
+success = {'code':status.HTTP_200_OK,'message':'success'}
+no_argument = {'code':status.HTTP_400_BAD_REQUEST,'message':'no required parameter found'}
+failed = {'code':status.HTTP_400_BAD_REQUEST,'message':'failed'}
 
 class TripList(viewsets.ViewSet):
     def list(self , request):
@@ -16,7 +20,7 @@ class TripList(viewsets.ViewSet):
         paginator.page_size = page_no
         result_page = paginator.paginate_queryset(trip_obj, request)
         context = {
-        "Message": "success",
+        "Message": success,
         "Output": TripListSerializer(result_page,many=True, context={'request': request}).data,
         }
         return Response(context)
@@ -52,7 +56,7 @@ class GetTripDetails(viewsets.ViewSet):
                 break
             break
         context = {
-            "Message": "success",
+            "Message": success,
             "Trip_Obj": TripListSerializer(trip_obj, many=False, context={'request': request}).data,
             "Nearest_Location":nearest_location,
             "Weather":weather_data_response['properties']['periods'][0]
